@@ -1,0 +1,293 @@
+﻿@{
+    ViewData["Title"] = "Sobre el Proyecto";
+}
+
+<style>
+    /* === VARIABLES DE DISEÑO === */
+    :root {
+        --app-bg: #0f0f13;
+        --app-card: #191921;
+        --app-accent-blue: #00d2d3;
+        --app-accent-purple: #5f27cd;
+        --app-text-main: #f5f6fa;
+        --app-text-muted: #b2bec3;
+        --app-gradient: linear-gradient(135deg, var(--app-accent-blue), var(--app-accent-purple));
+    }
+
+    body {
+        background-color: var(--app-bg);
+        color: var(--app-text-main);
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* === HERO SECTION === */
+    .hero-section {
+        text-align: center;
+        padding: 80px 20px 60px;
+        background: radial-gradient(circle at center, rgba(95, 39, 205, 0.15) 0%, rgba(15, 15, 19, 0) 70%);
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        background: var(--app-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -1px;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--app-text-muted);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* === SECCIONES DE CONTENIDO === */
+    .content-section {
+        padding: 60px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+        .content-section:last-child {
+            border-bottom: none;
+        }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 30px;
+        position: relative;
+        display: inline-block;
+    }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50%;
+            height: 4px;
+            background: var(--app-accent-blue);
+            margin-top: 10px;
+            border-radius: 2px;
+        }
+
+    .text-body-app {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #dcdde1;
+        text-align: justify;
+    }
+
+    /* === CARDS DE CONCEPTO === */
+    .concept-card {
+        background: var(--app-card);
+        border: 1px solid rgba(255,255,255,0.05);
+        padding: 30px;
+        border-radius: 15px;
+        height: 100%;
+        transition: 0.3s;
+    }
+
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-color: rgba(95, 39, 205, 0.3);
+        }
+
+    .icon-box {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: var(--app-accent-blue);
+    }
+
+    .btn-rl-official {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 25px;
+        background: transparent;
+        border: 2px solid var(--app-accent-blue);
+        color: var(--app-accent-blue);
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .btn-rl-official:hover {
+            background: var(--app-accent-blue);
+            color: #000;
+        }
+
+    /* === EQUIPO DE DESARROLLO === */
+    .dev-card {
+        text-align: center;
+        background: linear-gradient(180deg, var(--app-card) 0%, rgba(25,25,33,0) 100%);
+        padding: 40px;
+        border-radius: 20px;
+        border-top: 4px solid var(--app-accent-purple);
+    }
+
+    .dev-avatar {
+        width: 100px;
+        height: 100px;
+        background: #2d3436;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: white;
+        box-shadow: 0 0 20px rgba(95, 39, 205, 0.3);
+    }
+
+    .dev-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: white;
+    }
+
+    .dev-role {
+        color: var(--app-accent-blue);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+    }
+
+    /* Footer sutil */
+    .info-footer {
+        text-align: center;
+        padding: 40px;
+        color: var(--app-text-muted);
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="container">
+
+    <div class="hero-section">
+        <h1 class="hero-title">Tournament Manager</h1>
+        <p class="hero-subtitle">
+            Donde la precisión de los datos se encuentra con la adrenalina del deporte digital.
+            Una plataforma integral para la gestión profesional de competiciones electrónicas.
+        </p>
+    </div>
+
+    <div class="content-section">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="section-title">El Deporte del Futuro</h2>
+                <div class="text-body-app">
+                    <p>
+                        Para el observador casual, <strong>Rocket League</strong> podría parecer simplemente un videojuego.
+                        Sin embargo, en su núcleo, es una simulación física deportiva pura. Imagínese el fútbol tradicional,
+                        con sus tácticas, pases y porterías, pero jugado con <strong>vehículos propulsados por cohetes</strong>
+                        capaces de volar y moverse a velocidades vertiginosas.
+                    </p>
+                    <p>
+                        No hay suerte ni azar; solo física, geometría y habilidad mecánica. Es actualmente uno de los
+                        <strong>e-sports (deportes electrónicos)</strong> más competitivos y espectaculares del mundo,
+                        llenando estadios y moviendo a millones de espectadores globalmente.
+                    </p>
+                    <a href="https://www.rocketleague.com" target="_blank" class="btn-rl-official">
+                        Visitar Web Oficial <i class="bi bi-box-arrow-up-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="concept-card text-center">
+                    <i class="bi bi-controller icon-box"></i>
+                    <h3 class="h4 text-white">Física & Estrategia</h3>
+                    <p class="text-muted">
+                        Dos equipos (normalmente de 3 jugadores) compiten en una arena cerrada.
+                        El objetivo es simple: golpear un balón gigante para marcar gol.
+                        La ejecución es compleja: requiere años de práctica dominar el vuelo y el control del balón.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title" style="margin-left:auto; margin-right:auto;">Gestión de Alto Rendimiento</h2>
+                <p class="text-muted" style="max-width: 600px; margin: 0 auto;">
+                    Nuestra solución nace de la necesidad de profesionalizar el seguimiento de torneos locales y regionales.
+                </p>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="concept-card">
+                    <i class="bi bi-trophy icon-box" style="color:#ff9f43"></i>
+                    <h4 class="text-white">Torneos</h4>
+                    <p class="text-muted">
+                        Organización estructurada de rondas, cruces y resultados en tiempo real. Eliminamos el papel y las hojas de cálculo manuales.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="concept-card">
+                    <i class="bi bi-bar-chart-line icon-box" style="color:#00d2d3"></i>
+                    <h4 class="text-white">Big Data</h4>
+                    <p class="text-muted">
+                        Cálculo automático de estadísticas vitales: Winrate (tasa de victoria), Goles por partido, MVPs y rendimiento individual de cada atleta.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="concept-card">
+                    <i class="bi bi-people icon-box" style="color:#5f27cd"></i>
+                    <h4 class="text-white">Scouting</h4>
+                    <p class="text-muted">
+                        Perfiles detallados de equipos y jugadores. Una base de datos histórica que permite evaluar la evolución de las escuadras temporada tras temporada.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2 class="section-title mb-5">Arquitectos del Proyecto</h2>
+
+        <div class="row justify-content-center g-5">
+            <div class="col-md-5 col-lg-4">
+                <div class="dev-card">
+                    <div class="dev-avatar">
+                        <span class="fw-bold">PA</span>
+                    </div>
+                    <h3 class="dev-name">Pedro Alvarez</h3>
+                    <div class="dev-role">Co-Founder & Backend Lead</div>
+                    <p class="text-muted small">
+                        Especialista en arquitectura y lógica de servidor.
+                        Encargado de que cada cálculo estadístico sea preciso y el sistema escale correctamente.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-5 col-lg-4">
+                <div class="dev-card">
+                    <div class="dev-avatar" style="background: #341f97; color: #00d2d3;">
+                        <span class="fw-bold">AB</span>
+                    </div>
+                    <h3 class="dev-name">Alfredo Blanco</h3>
+                    <div class="dev-role">Co-Founder & Frontend Lead</div>
+                    <p class="text-muted small">
+                        Especialista en arquitectura de datos, experiencia de usuario (UX) y el diseño de interfaz.
+                        Su objetivo es diseñar y traducir datos complejos en visualizaciones claras y atractivas.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-footer">
+        <p>&copy; @DateTime.Now.Year Tournament Manager. Desarrollado con pasión por los videojuegos y la tecnología.</p>
+        <a asp-action="Index" class="btn btn-sm btn-outline-light rounded-pill px-4 mt-2">Volver al Inicio</a>
+    </div>
+
+</div>

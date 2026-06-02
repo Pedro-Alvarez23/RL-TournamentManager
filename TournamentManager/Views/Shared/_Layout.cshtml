@@ -1,0 +1,272 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RL - @ViewData["Title"]</title>
+
+    <link rel="icon" type="image/png" href="~/images/RocketLogoOroDef.png" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --rl-purple: #4c1a7d;
+            --rl-dark-purple: #1a0b2e;
+            --rl-blue: #00c8ff;
+            --rl-orange: #ff8c00;
+            --rl-glass: rgba(30, 15, 60, 0.85);
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: radial-gradient(circle at center, #2b1255 0%, #0d0616 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            /* Fix Google Translate */
+            position: static !important;
+            top: 0px !important;
+        }
+
+        .main-content {
+            flex: 1 0 auto;
+        }
+
+        .rl-navbar {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--rl-blue);
+            box-shadow: 0 0 15px var(--rl-blue);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff !important;
+            text-shadow: 0 0 10px var(--rl-blue);
+            font-style: italic;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.7) !important;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+            .nav-link:hover {
+                color: var(--rl-orange) !important;
+                text-shadow: 0 0 8px var(--rl-orange);
+            }
+
+        .footer {
+            flex-shrink: 0; 
+            background: rgba(0,0,0,0.3);
+            color: rgba(255,255,255,0.4);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .footer-link {
+            color: var(--rl-blue);
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+            margin-left: 15px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+            .footer-link:hover {
+                color: var(--rl-orange);
+                text-shadow: 0 0 8px var(--rl-orange);
+            }
+
+        .flag-btn {
+            cursor: pointer;
+            margin-left: 12px;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border-radius: 50%;
+            padding: 2px;
+            border: 2px solid transparent;
+        }
+
+            .flag-btn:hover {
+                transform: scale(1.15);
+                opacity: 1;
+                border-color: var(--rl-blue);
+                box-shadow: 0 0 10px var(--rl-blue);
+            }
+
+            .flag-btn img {
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                object-fit: cover;
+                display: block;
+            }
+
+        /* OCULTAR GOOGLE TRANSLATE */
+        .goog-te-banner-frame {
+            display: none !important;
+        }
+
+        .goog-te-gadget-icon {
+            display: none !important;
+        }
+
+        #google_translate_element {
+            display: none !important;
+        }
+
+        .goog-tooltip {
+            display: none !important;
+        }
+
+            .goog-tooltip:hover {
+                display: none !important;
+            }
+
+        .goog-text-highlight {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        iframe[class*="goog-te-banner"], iframe[id*=":1.container"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+        }
+    </style>
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm rl-navbar mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/RocketLogoOroDef.png" alt="Logo" style="height: 50px; width: auto; margin-right: 5px;" />
+                    RL MANAGER
+                </a>
+                <button class="navbar-toggler bg-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Rankings" asp-action="Equipos">Teams Rankings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Rankings" asp-action="Jugadores">Players Ranking</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Torneo" asp-action="Index">Tournaments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="TorneoWizard" asp-action="Crear">New Tournament</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Partido" asp-action="Index">All Matches</a>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center ms-auto pt-2 pt-sm-0">
+                        <div id="google_translate_element"></div>
+
+                        <a href="javascript:void(0)" onclick="translateLanguage('en')" class="flag-btn" title="English">
+                            <img src="https://flagcdn.com/w40/gb.png" alt="English">
+                        </a>
+                        <a href="javascript:void(0)" onclick="translateLanguage('es')" class="flag-btn" title="Español">
+                            <img src="https://flagcdn.com/w40/es.png" alt="Español">
+                        </a>
+                        <a href="javascript:void(0)" onclick="translateLanguage('fr')" class="flag-btn" title="Français">
+                            <img src="https://flagcdn.com/w40/fr.png" alt="Français">
+                        </a>
+                        <a href="javascript:void(0)" onclick="translateLanguage('ja')" class="flag-btn" title="日本語">
+                            <img src="https://flagcdn.com/w40/jp.png" alt="Japanese">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container pb-5 main-content">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer mt-auto py-3 text-center">
+        <div class="container d-flex justify-content-center align-items-center">
+            <span>&copy; 2026 - TournamentManager - WAlf</span>
+
+            <span class="mx-3 text-white-50">|</span>
+
+            <a asp-controller="Home" asp-action="InfoApp" class="footer-link">
+                <i class="bi bi-info-circle me-1"></i> Info App
+            </a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'es',
+                includedLanguages: 'en,es,fr,ja',
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+
+        function translateLanguage(lang) {
+            var selectField = document.querySelector("select.goog-te-combo");
+            if (selectField) {
+                selectField.value = lang;
+                selectField.dispatchEvent(new Event('change'));
+            }
+        }
+
+        $(document).ready(function() {
+            $('body').css('top', '0px');
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === "style") {
+                        const bodyTop = document.body.style.top;
+                        if (bodyTop && bodyTop !== "0px") {
+                            document.body.style.top = "0px";
+                            document.body.style.position = "static";
+                        }
+                    }
+                });
+            });
+            observer.observe(document.body, { attributes: true, attributeFilter: ['style'] });
+        });
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,299 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+
+    // --- LOGICA DE DATOS (SERVER SIDE) ---
+    var now = DateTime.Now;
+    var r = new Random();
+
+    // Calculo de Goles (Progresivo según hora del día)
+    // Total minutos pasados desde las 00:00
+    double totalMinutes = (now - now.Date).TotalMinutes;
+    // Goles por minuto aprox: 2564
+    int maxGoalsDaily = 3693272;
+    int currentGoals = (int)((totalMinutes / 1440.0) * maxGoalsDaily);
+
+    // Añadimos un pequeño factor aleatorio para que no sea estático si refrescas rápido
+    currentGoals += r.Next(0, 500);
+
+    // Calculo de Jugadores (15k - 50k, influenciado por la hora)
+    int minPlayers = 15000;
+    int maxPlayers = 50000;
+    int currentPlayers = 0;
+
+    // Si es hora punta (18:00 - 23:00) forzamos que esté en el rango alto
+    if (now.Hour >= 18 && now.Hour <= 23)
+    {
+        currentPlayers = r.Next(35000, maxPlayers);
+    }
+    // Si es madrugada (04:00 - 08:00) forzamos rango bajo
+    else if (now.Hour >= 4 && now.Hour <= 8)
+    {
+        currentPlayers = r.Next(minPlayers, 25000);
+    }
+    else
+    {
+        currentPlayers = r.Next(minPlayers, maxPlayers);
+    }
+
+    // Noticias
+    var noticias = new[]
+    {
+        new {
+            Titulo = "RLCS Winter Major: La Gran Final",
+            Fecha = "Hace 2 horas",
+            Categoria = "ESPORTS",
+            Imagen = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600",
+            Resumen = "Los mejores equipos del mundo aterrizan en Rotterdam. ¿Podrá Team Vitality mantener su racha?"
+        },
+        new {
+            Titulo = "Parche v2.35: Ajustes al Fennec",
+            Fecha = "Ayer",
+            Categoria = "UPDATE",
+            Imagen = "https://www.exitlag.com/blog/wp-content/uploads/2025/06/fennec-rocket-league.webp",
+            Resumen = "Psyonix anuncia cambios controversiales en las hitboxes. Analizamos cómo afectará esto al meta."
+        },
+        new {
+            Titulo = "Nuevo Coche: 'Cyber-Fury'",
+            Fecha = "04 Ene 2026",
+            Categoria = "DLC",
+            Imagen = "https://i.pinimg.com/originals/9b/dd/d6/9bddd63f4617d0b4ad4e336313ecdbdd.jpg",
+            Resumen = "Ilumina la arena con el nuevo chasis importado. Incluye calcomanías animadas y ruedas de neón."
+        }
+    };
+}
+
+<style>
+    :root {
+        --rl-blue: #00a8ff;
+        --rl-orange: #ff8c00;
+        --rl-purple: #6c5ce7;
+    }
+
+    .hero-section {
+        position: relative;
+        height: 500px;
+        border-radius: 15px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        background: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=1200') no-repeat center center/cover;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, rgba(10,5,20,0.9) 0%, rgba(10,5,20,0.4) 100%);
+        z-index: 1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        padding-left: 60px;
+        max-width: 600px;
+    }
+
+    .hero-badge {
+        background: var(--rl-orange);
+        color: black;
+        font-weight: bold;
+        padding: 5px 15px;
+        text-transform: uppercase;
+        font-style: italic;
+        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    .news-card {
+        background: rgba(20, 10, 40, 0.6);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        backdrop-filter: blur(10px);
+    }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 168, 255, 0.2);
+            border-color: var(--rl-blue);
+        }
+
+    .news-img-wrapper {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .news-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+    .news-card:hover .news-img-wrapper img {
+        transform: scale(1.1);
+    }
+
+    .category-tag {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.8);
+        color: var(--rl-blue);
+        border: 1px solid var(--rl-blue);
+        padding: 2px 10px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .btn-read-more {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.9rem;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .btn-read-more:hover {
+            color: var(--rl-orange);
+            gap: 10px;
+        }
+
+    .stat-box {
+        background: linear-gradient(45deg, rgba(255,255,255,0.05), transparent);
+        border-left: 4px solid var(--rl-purple);
+        padding: 15px;
+        border-radius: 0 10px 10px 0;
+    }
+</style>
+
+<div class="container mt-4 mb-5">
+
+    <div class="hero-section mb-5">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <span class="hero-badge">Tournament Live</span>
+            <h1 class="display-3 fw-bold fst-italic text-white" style="text-shadow: 0 0 20px rgba(0,168,255,0.5);">
+                SEASON 5 <br> <span style="color: var(--rl-blue);">IS HERE</span>
+            </h1>
+            <p class="lead text-light opacity-75 mb-4">
+                La arena te espera. No te pierdas ni un segundo de la acción: rastrea el progreso de tus favoritos, domina los datos del torneo y descubre quién reclamará el trono esta temporada.
+            </p>
+            <div class="d-flex gap-3">
+                <a asp-controller="Rankings" asp-action="Jugadores" class="btn btn-primary btn-lg fw-bold px-4 rounded-0 fst-italic"
+                   style="background: var(--rl-blue); border: none; color: black;">
+                    VER RANKING
+                </a>
+                <a asp-controller="Rankings" asp-action="Equipos" class="btn btn-outline-light btn-lg fw-bold px-4 rounded-0 fst-italic">
+                    VER EQUIPOS
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5 g-3">
+        <div class="col-md-4">
+            <div class="stat-box">
+                <h5 class="text-white m-0">ACTIVE PLAYERS</h5>
+                <span id="stat-players" class="display-6 fw-bold text-info">@currentPlayers.ToString("N0")</span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box" style="border-color: var(--rl-orange);">
+                <h5 class="text-white m-0">TOTAL GOALS (TODAY)</h5>
+                <span id="stat-goals" class="display-6 fw-bold text-warning">@currentGoals.ToString("N0")</span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box" style="border-color: #28a745;">
+                <h5 class="text-white m-0">PRIZE POOL</h5>
+                <span class="display-6 fw-bold text-success">$15,250.00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-end mb-4 border-bottom border-secondary pb-2">
+        <h2 class="text-white fw-bold fst-italic m-0">
+            <i class="bi bi-newspaper text-warning"></i> LATEST NEWS
+        </h2>
+        <a href="#" class="text-decoration-none text-muted small">VIEW ARCHIVE <i class="bi bi-chevron-right"></i></a>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var noticia in noticias)
+        {
+            <div class="col-md-4">
+                <div class="news-card">
+                    <div class="news-img-wrapper">
+                        <img src="@noticia.Imagen" alt="News Image">
+                        <span class="category-tag">@noticia.Categoria</span>
+                    </div>
+                    <div class="p-4 d-flex flex-column h-100">
+                        <div class="d-flex justify-content-between mb-2">
+                            <small class="text-info fw-bold">@noticia.Fecha</small>
+                        </div>
+                        <h4 class="text-white fw-bold mb-3">@noticia.Titulo</h4>
+                        <p class="text-muted small mb-4 flex-grow-1">
+                            @noticia.Resumen
+                        </p>
+                        <a href="#" class="btn-read-more">
+                            LEER MÁS <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="mt-5 p-4 rounded text-center position-relative overflow-hidden"
+         style="background: linear-gradient(135deg, var(--rl-purple), #2b1055);">
+        <div class="position-relative z-2">
+            <h3 class="text-white fw-bold fst-italic">¿BUSCAS EQUIPO?</h3>
+            <p class="text-white opacity-75">Únete a nuestro servidor de Discord y encuentra compañeros para el torneo.</p>
+
+            <a href="https://discord.com/invite/rocketleague" target="_blank" class="btn btn-light fw-bold rounded-pill px-4 mt-2">
+                <i class="bi bi-discord"></i> UNIRSE AHORA
+            </a>
+
+        </div>
+        <div style="position: absolute; top: -50px; left: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -50px; right: -50px; width: 300px; height: 300px; background: rgba(0,0,0,0.2); border-radius: 50%;"></div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let goals = @currentGoals;
+        let players = @currentPlayers;
+
+        const goalsEl = document.getElementById('stat-goals');
+        const playersEl = document.getElementById('stat-players');
+
+        const format = (num) => new Intl.NumberFormat('es-ES').format(num);
+
+        setInterval(() => {
+            goals += Math.floor(Math.random() * 10) + 1;
+            goalsEl.innerText = format(goals);
+        }, 3000);
+
+        setInterval(() => {
+            let change = Math.floor(Math.random() * 20) - 10;
+            players += change;
+            playersEl.innerText = format(players);
+        }, 5000);
+    });
+</script>

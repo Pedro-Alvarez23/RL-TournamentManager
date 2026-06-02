@@ -1,0 +1,188 @@
+﻿@model TournamentManager.Models.Torneo
+@using TournamentManager.Models
+
+@{
+    ViewData["Title"] = "Editar Torneo";
+}
+
+<style>
+    /* Estilos Neon reutilizados */
+    :root {
+        --rl-blue: #00a8ff;
+        --rl-purple: #6c5ce7;
+        --rl-panel: rgba(255, 255, 255, 0.05);
+    }
+
+    body {
+        background-color: #050505;
+        color: white;
+    }
+
+    .neon-card {
+        background: var(--rl-panel);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .neon-title {
+        font-style: italic;
+        font-weight: 900;
+        text-transform: uppercase;
+        background: -webkit-linear-gradient(45deg, #fff, var(--rl-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px rgba(0, 168, 255, 0.4);
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .form-label {
+        color: var(--rl-blue);
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .form-control-neon {
+        background-color: rgba(0,0,0,0.5);
+        border: 1px solid var(--rl-purple);
+        color: white;
+        border-radius: 5px;
+        padding: 10px;
+        width: 100%;
+        transition: 0.3s;
+    }
+
+        .form-control-neon:focus {
+            outline: none;
+            box-shadow: 0 0 15px var(--rl-purple);
+            border-color: var(--rl-blue);
+            color: white;
+        }
+
+        /* Select option styles (difícil de estilizar, pero intentamos que sea oscuro) */
+        .form-control-neon option {
+            background-color: #1a1a1a;
+            color: white;
+        }
+
+    .btn-save {
+        background: linear-gradient(90deg, var(--rl-blue), var(--rl-purple));
+        border: none;
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 12px 0; 
+        width: 100%; 
+        display: block;
+        text-align: center; 
+        margin-top: 20px;
+        clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+        .btn-save:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px var(--rl-blue);
+            color: white;
+        }
+
+    .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: rgba(255,255,255,0.5);
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .back-link:hover {
+            color: var(--rl-blue);
+            letter-spacing: 1px;
+        }
+
+    .info-badge {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-size: 0.85rem;
+        border-left: 3px solid var(--rl-purple);
+    }
+</style>
+
+<div class="container mt-5">
+
+    <div class="neon-card">
+        <h1 class="neon-title">Editar Torneo</h1>
+
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* CAMPOS OCULTOS (Necesarios para que no se borren al guardar) *@
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="FechaInicio" />
+            <input type="hidden" asp-for="FechaFin" />
+            <input type="hidden" asp-for="Estado" />
+            <input type="hidden" asp-for="CampeonId" />
+
+            @* Si NO está finalizado, el MVP también debe ir oculto para no perderlo (si hubiera uno preseleccionado) *@
+            @if (Model.Estado != EstadoTorneo.Finalizado)
+            {
+                <input type="hidden" asp-for="MVPId" />
+            }
+
+            @* CAMPO 1: NOMBRE (Siempre editable) *@
+            <div class="form-group mb-3">
+                <label asp-for="Nombre" class="form-label">Nombre del Torneo</label>
+                <input asp-for="Nombre" class="form-control-neon" autocomplete="off" />
+                <span asp-validation-for="Nombre" class="text-danger small"></span>
+            </div>
+
+            @* INFORMACIÓN DE ESTADO (Solo lectura visual) *@
+            <div class="info-badge">
+                <i class="bi bi-info-circle"></i>
+                Estado actual: <strong style="color: var(--rl-blue)">@Model.Estado</strong>.
+                Las fechas y el estado se gestionan automáticamente.
+            </div>
+
+            @* CAMPO 2: MVP (Solo visible si está FINALIZADO) *@
+            @if (Model.Estado == EstadoTorneo.Finalizado)
+            {
+                <div class="form-group mb-3">
+                    <label asp-for="MVPId" class="form-label">
+                        <i class="bi bi-star-fill text-warning"></i> Seleccionar MVP
+                    </label>
+                    <p class="small text-muted mb-1">Elige al mejor jugador del equipo ganador (@(Model.Campeon?.Nombre ?? "Sin campeón")).</p>
+
+                    @* NOTA: Aquí asumo que tu Controller pasa en ViewBag.MVPId la lista filtrada *@
+                    <select asp-for="MVPId" class="form-control-neon" asp-items="ViewBag.MVPId">
+                        <option value="">-- Seleccionar MVP --</option>
+                    </select>
+                    <span asp-validation-for="MVPId" class="text-danger small"></span>
+                </div>
+            }
+
+            <div class="form-group">
+                <input type="submit" value="Guardar Cambios" class="btn btn-save" />
+            </div>
+        </form>
+
+        <a asp-action="Index" class="back-link">
+            <i class="bi bi-arrow-left"></i> Volver a la lista
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

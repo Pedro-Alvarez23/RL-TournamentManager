@@ -1,0 +1,232 @@
+﻿@model TournamentManager.Models.Equipo
+
+@{
+    ViewData["Title"] = "Detalles del Equipo";
+}
+
+<style>
+    /* Variables de color estilo Rocket League */
+    :root {
+        --rl-blue: #00c8ff;
+        --rl-orange: #ff8c00; /* Color de selección */
+        --rl-purple: #4c1a7d;
+        --rl-dark: #0d0616;
+        --rl-glass: rgba(20, 10, 40, 0.85);
+        --rl-text-glow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Fondo degradado oscuro para la tarjeta */
+    .neon-card {
+        background: linear-gradient(135deg, rgba(30, 15, 60, 0.9), rgba(10, 5, 20, 0.95));
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 4px solid var(--rl-blue); /* Borde inferior grueso azul */
+        border-radius: 4px; /* Bordes menos redondeados, más técnicos */
+        padding: 40px;
+        box-shadow: 0 0 30px rgba(0, 200, 255, 0.15);
+        max-width: 1000px;
+        margin: 50px auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+        /* Efecto de línea brillante decorativa arriba */
+        .neon-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--rl-blue), transparent);
+        }
+
+    /* Título del equipo */
+    h2.neon-title {
+        font-family: 'Rajdhani', sans-serif; /* Si tienes esta fuente cargada en Layout, si no usa sans-serif */
+        font-style: italic;
+        font-weight: 800;
+        font-size: 3rem;
+        text-transform: uppercase;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 40px;
+        letter-spacing: 4px;
+        text-shadow: 0 0 20px var(--rl-blue);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 20px;
+        /* Para alinear logo y texto verticalmente */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    /* ESTILO NUEVO PARA EL LOGO */
+    .team-logo-detail {
+        height: 80px; /* Tamaño controlado para no romper nada */
+        width: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); /* Brillo blanco alrededor */
+    }
+
+    /* Tabla Estilizada */
+    .table-rl {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 6px; /* Espacio entre filas */
+    }
+
+        .table-rl thead th {
+            color: var(--rl-blue);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            padding: 15px 20px;
+            border: none;
+            font-weight: 700;
+            text-align: left;
+        }
+
+    /* Filas de Jugadores */
+    .player-row {
+        background: rgba(255, 255, 255, 0.03);
+        cursor: pointer; /* Manita al pasar el ratón */
+        transition: all 0.2s ease-in-out;
+        position: relative;
+    }
+
+        .player-row td {
+            padding: 18px 20px;
+            vertical-align: middle;
+            border: none;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+            /* Bordes izquierdos para efecto de "ficha" */
+            .player-row td:first-child {
+                border-left: 3px solid transparent;
+                border-top-left-radius: 4px;
+                border-bottom-left-radius: 4px;
+            }
+
+            .player-row td:last-child {
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+            }
+
+        /* HOVER: El efecto mágico estilo Rocket League */
+        .player-row:hover {
+            transform: scale(1.02) translateX(5px); /* Crece y se mueve un poco a la derecha */
+            background: linear-gradient(90deg, rgba(255, 140, 0, 0.2), rgba(0,0,0,0)); /* Naranja RL */
+            box-shadow: -5px 0 15px rgba(255, 140, 0, 0.4); /* Resplandor naranja */
+        }
+
+            .player-row:hover td:first-child {
+                border-left: 3px solid var(--rl-orange); /* Borde naranja al seleccionar */
+            }
+
+            .player-row:hover td {
+                color: #fff;
+                text-shadow: 0 0 5px var(--rl-orange);
+            }
+
+    /* Botón Volver */
+    .btn-back {
+        margin-top: 40px;
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 35px;
+        background: transparent;
+        border: 2px solid var(--rl-blue);
+        color: var(--rl-blue);
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-decoration: none;
+        transition: 0.3s;
+        font-style: italic;
+        clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%); /* Forma angular futurista */
+    }
+
+        .btn-back:hover {
+            background: var(--rl-blue);
+            color: #000;
+            box-shadow: 0 0 20px var(--rl-blue);
+        }
+
+    /* Estilo para el Nick (más destacado) */
+    .nick-highlight {
+        font-weight: 800;
+        font-style: italic;
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="container">
+    <div class="neon-card">
+        <h2 class="neon-title">
+            @if (!string.IsNullOrEmpty(Model.Logo))
+            {
+                <img src="@Model.Logo" alt="@Model.Nombre Logo" class="team-logo-detail" />
+            }
+            else
+            {
+                <i class="bi bi-shield-shaded me-2"></i>
+            }
+            @Model.Nombre
+        </h2>
+
+        <div class="table-responsive">
+            <table class="table-rl">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Player Name</th>
+                        <th>In-Game Nick</th>
+                        <th>Age</th>
+                        <th>Country</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int counter = 1;
+                        foreach (var jugador in Model.Jugadores)
+                        {
+                            <tr class="player-row" onclick="location.href='@Url.Action("Details", "Jugador", new { id = jugador.Id })'">
+
+                                <td class="text-white-50">@counter</td>
+
+                                <td>@jugador.Nombre</td>
+
+                                <td class="nick-highlight">@jugador.Nick</td>
+
+                                <td>@jugador.Edad</td>
+
+                                <td>
+                                    <i class="bi bi-geo-alt-fill text-secondary me-1"></i> @jugador.Pais
+                                </td>
+                            </tr>
+                            counter++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!Model.Jugadores.Any())
+        {
+            <div class="text-center text-muted py-5">
+                <h4>No players registered in this team yet.</h4>
+            </div>
+        }
+
+        <div class="text-center">
+            <a asp-controller="Rankings" asp-action="Equipos" class="btn-back">
+                <i class="bi bi-arrow-return-left me-2"></i> Roster List
+            </a>
+        </div>
+    </div>
+</div>

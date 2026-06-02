@@ -1,0 +1,240 @@
+﻿@model TournamentManager.Models.Torneo
+@using TournamentManager.Models
+
+@{
+    ViewData["Title"] = Model.Nombre;
+
+    // 1. Buscamos las rondas por su NOMBRE en lugar de por ID u orden de inserción.
+    //    Esto evita que la "Gran Final" (ID 1) se cuele como si fueran Cuartos.
+    var rondaCuartos = Model.Rondas.FirstOrDefault(r => r.Nombre.Contains("Cuartos"));
+    var rondaSemis = Model.Rondas.FirstOrDefault(r => r.Nombre.Contains("Semi"));
+    // Para la final buscamos "Gran Final" o "Final" excluyendo cuartos
+    var rondaFinal = Model.Rondas.FirstOrDefault(r => r.Nombre.Contains("Gran Final") || (r.Nombre.Contains("Final") && !r.Nombre.Contains("Cuartos")));
+
+    // 2. Obtenemos los partidos de cada ronda y los ordenamos por ID para mantener el orden del bracket (1 vs 8, 4 vs 5, etc.)
+    var cuartos = rondaCuartos?.Partidos.OrderBy(p => p.Id).ToList() ?? new List<Partido>();
+    var semisList = rondaSemis?.Partidos.OrderBy(p => p.Id).ToList() ?? new List<Partido>();
+
+    // 3. Asignamos las variables específicas que usa tu vista
+    // Semifinales: Separamos la primera (izquierda) y la segunda (derecha)
+    var semi1 = semisList.Count > 0 ? semisList[0] : null;
+    var semi2 = semisList.Count > 1 ? semisList[1] : null;
+
+    // Final: Solo hay un partido
+    var finalMatch = rondaFinal?.Partidos.FirstOrDefault();
+}
+
+<style>
+    /* Estilos Generales Neon */
+    :root {
+        --rl-blue: #00a8ff;
+        --rl-purple: #6c5ce7;
+        --rl-bg: #0f0f13;
+        --rl-card: rgba(255, 255, 255, 0.03);
+    }
+
+    .bracket-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 85vh;
+        overflow: hidden;
+    }
+
+    .bracket-grid {
+        display: grid;
+        grid-template-columns: 1fr 0.8fr 1.2fr 0.8fr 1fr;
+        gap: 30px;
+        align-items: center;
+        width: 98%;
+        height: 100%;
+    }
+
+    .round-column {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        height: 100%;
+        padding: 20px 0;
+    }
+
+        .round-column.final-col {
+            justify-content: center;
+            transform: scale(1.15); /* La final un poco más grande */
+            margin-bottom: 10vh;
+        }
+
+    .center {
+        justify-content: center;
+    }
+
+    /* Estilos específicos de la Match Card */
+    .match-card {
+        background: var(--rl-card);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 6px;
+        padding: 8px 10px;
+        position: relative;
+        backdrop-filter: blur(5px);
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        min-width: 160px;
+    }
+
+        .match-card:hover {
+            border-color: var(--rl-blue);
+            box-shadow: 0 0 20px rgba(0,168,255,0.2);
+        }
+
+    .final-match {
+        border-color: #ffd700;
+        background: rgba(255, 215, 0, 0.05);
+    }
+
+    .team-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 3px 0;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .match-divider {
+        height: 1px;
+        background: rgba(255,255,255,0.1);
+        margin: 3px 0;
+    }
+
+    /* LOGOS PEQUEÑOS EN BRACKET */
+    .team-logo-mini {
+        height: 20px;
+        width: 20px;
+        object-fit: contain;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    .winner {
+        color: #2ed573;
+        text-shadow: 0 0 5px rgba(46,213,115,0.4);
+    }
+
+    .loser {
+        color: rgba(255,255,255,0.3);
+    }
+
+    .team-tbd {
+        color: rgba(255,255,255,0.15);
+        font-style: italic;
+    }
+
+    .score {
+        background: rgba(0,0,0,0.5);
+        padding: 1px 6px;
+        border-radius: 4px;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    /* Botones de acción flotantes */
+    .btn-action {
+        position: absolute;
+        right: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: 0.2s;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        z-index: 5;
+        font-size: 0.8rem;
+    }
+
+    .btn-play {
+        background: var(--rl-blue);
+        color: white;
+    }
+
+    .btn-edit {
+        background: var(--rl-purple);
+        color: white;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-50%) scale(1.2);
+        color: white;
+    }
+
+    .locked-icon {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255,255,255,0.1);
+        font-size: 0.8rem;
+    }
+</style>
+
+<div class="container-fluid" style="height: calc(100vh - 80px); overflow: hidden;">
+    <div class="text-center mb-2 mt-2">
+        <h2 class="fw-bold fst-italic text-uppercase m-0" style="color:white; text-shadow:0 0 20px var(--rl-blue);">
+            @Model.Nombre
+        </h2>
+        <span class="badge bg-dark border border-secondary text-uppercase" style="font-size: 0.6rem; letter-spacing: 2px;">@Model.Estado</span>
+    </div>
+
+    <div class="bracket-container">
+        <div class="bracket-grid">
+            <div class="round-column">
+                @if (cuartos.Count >= 2)
+                {
+                    @await Html.PartialAsync("_Match", cuartos[0])
+                    @await Html.PartialAsync("_Match", cuartos[1])
+                }
+            </div>
+
+            <div class="round-column center">
+                @await Html.PartialAsync("_Match", semi1)
+            </div>
+
+            <div class="round-column final-col">
+                @{
+                    ViewData["IsFinal"] = true;
+                }
+                @await Html.PartialAsync("_Match", finalMatch)
+                @{
+                    ViewData["IsFinal"] = false;
+                }
+
+                @if (Model.MVP != null)
+                {
+                    <div class="text-center mt-3 animate__animated animate__fadeInUp">
+                        <small class="text-muted" style="font-size: 0.7rem;">MVP</small>
+                        <div style="color:#ffd700; font-weight: bold;">
+                            <i class="bi bi-star-fill me-1"></i> @Model.MVP.Nick
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="round-column center">
+                @await Html.PartialAsync("_Match", semi2)
+            </div>
+
+            <div class="round-column">
+                @if (cuartos.Count >= 4)
+                {
+                    @await Html.PartialAsync("_Match", cuartos[2])
+                    @await Html.PartialAsync("_Match", cuartos[3])
+                }
+            </div>
+        </div>
+    </div>
+</div>

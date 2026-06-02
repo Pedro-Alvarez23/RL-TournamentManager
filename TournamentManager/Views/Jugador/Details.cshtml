@@ -1,0 +1,333 @@
+﻿@model TournamentManager.Models.Jugador
+
+@{
+    ViewData["Title"] = "Perfil de " + Model.Nick;
+}
+
+<style>
+    :root {
+        --pl-accent: #d63031; /* Rojo/Rosado */
+        --pl-primary: #a29bfe; /* Lila */
+        --pl-bg: #0f0f13;
+        --pl-glass: rgba(255, 255, 255, 0.05);
+        --pl-card-bg: #1e1e24;
+    }
+
+    body {
+        background-color: var(--pl-bg);
+        color: white;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* CONTENEDOR DE LA CARTA */
+    .player-profile-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 40px;
+    }
+
+    .player-card {
+        background: linear-gradient(145deg, #1e1e24, #141419);
+        width: 100%;
+        max-width: 600px;
+        border-radius: 20px;
+        position: relative;
+        padding: 40px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,255,255,0.05);
+        overflow: hidden;
+    }
+
+        /* Efecto de borde brillante superior */
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--pl-accent), var(--pl-primary));
+            box-shadow: 0 0 20px var(--pl-primary);
+        }
+
+    /* CABECERA DEL JUGADOR */
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .avatar-placeholder {
+        width: 100px;
+        height: 100px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        font-size: 3rem;
+        color: var(--pl-primary);
+        border: 2px solid var(--pl-primary);
+        box-shadow: 0 0 20px rgba(162, 155, 254, 0.2);
+    }
+
+    .player-nick {
+        font-size: 2.5rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin: 0;
+        letter-spacing: 2px;
+        background: -webkit-linear-gradient(45deg, #fff, var(--pl-primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .player-realname {
+        color: rgba(255,255,255,0.5);
+        font-size: 1rem;
+        margin-top: 5px;
+    }
+
+    .info-badges {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .badge-info {
+        background: rgba(255,255,255,0.05);
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        color: #ccc;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* ENLACE AL EQUIPO */
+    .team-link-section {
+        margin: 20px 0 30px 0;
+    }
+
+    .btn-team-card {
+        display: block;
+        background: rgba(0, 168, 255, 0.1);
+        border: 1px solid rgba(0, 168, 255, 0.3);
+        padding: 15px;
+        border-radius: 12px;
+        text-decoration: none;
+        color: white;
+        transition: 0.3s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .btn-team-card:hover {
+            background: rgba(0, 168, 255, 0.2);
+            transform: scale(1.02);
+            color: white;
+            box-shadow: 0 0 15px rgba(0, 168, 255, 0.2);
+        }
+
+    /* ESTILO NUEVO PARA EL LOGO EN EL BOTÓN */
+    .team-logo-btn {
+        height: 28px;
+        width: 28px;
+        object-fit: contain;
+        vertical-align: middle;
+        margin-right: 10px;
+        filter: drop-shadow(0 0 2px rgba(255,255,255,0.3));
+    }
+
+    /* GRID DE ESTADISTICAS */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .stat-box {
+        background: rgba(0,0,0,0.3);
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: 0.2s;
+    }
+
+        .stat-box:hover {
+            border-color: rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.5);
+        }
+
+        .stat-box.highlight {
+            grid-column: span 2;
+            background: linear-gradient(45deg, rgba(162, 155, 254, 0.1), rgba(0,0,0,0));
+            border-color: var(--pl-primary);
+        }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.5);
+        letter-spacing: 1px;
+    }
+
+    /* COLORES DE STATS */
+    .val-gold {
+        color: #ffd700;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .val-green {
+        color: #2ed573;
+    }
+
+    .val-blue {
+        color: #70a1ff;
+    }
+
+    .val-red {
+        color: #ff7675;
+    }
+
+    .val-white {
+        color: white;
+    }
+
+    /* FOOTER BOTONES */
+    .card-footer-actions {
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 20px;
+    }
+
+    .btn-action {
+        padding: 10px 25px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+        font-size: 0.9rem;
+    }
+
+    .btn-edit {
+        background: white;
+        color: black;
+    }
+
+        .btn-edit:hover {
+            background: #ccc;
+            transform: translateY(-2px);
+        }
+
+    .btn-back {
+        color: rgba(255,255,255,0.6);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+        .btn-back:hover {
+            color: white;
+            border-color: white;
+            background: rgba(255,255,255,0.05);
+        }
+</style>
+
+<div class="player-profile-container">
+    <div class="player-card">
+
+        <div class="profile-header">
+            <div class="avatar-placeholder">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <h1 class="player-nick">@Model.Nick</h1>
+            <div class="player-realname">
+                @Model.Nombre
+            </div>
+            <div class="info-badges">
+                <span class="badge-info"><i class="bi bi-globe-americas"></i> @Model.Pais</span>
+                <span class="badge-info"><i class="bi bi-calendar3"></i> @Model.Edad años</span>
+            </div>
+        </div>
+
+        <div class="team-link-section">
+            @if (Model.Equipo != null)
+            {
+                <a asp-controller="Equipo" asp-action="Details" asp-route-id="@Model.EquipoId" class="btn-team-card" title="Ver equipo y compañeros">
+                    <div>
+                        <small class="text-muted d-block" style="font-size:0.7rem">EQUIPO ACTUAL</small>
+                        <span class="fs-5 fw-bold d-flex align-items-center">
+                            @if (!string.IsNullOrEmpty(Model.Equipo.Logo))
+                            {
+                                <img src="@Model.Equipo.Logo" class="team-logo-btn" alt="Logo" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-shield-shaded me-2"></i>
+                            }
+                            @Model.Equipo.Nombre
+                        </span>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+            }
+            else
+            {
+                <div class="btn-team-card" style="opacity:0.5; cursor: default;">
+                    <div>
+                        <small class="text-muted d-block" style="font-size:0.7rem">ESTADO</small>
+                        <span class="fs-5 fw-bold"><i class="bi bi-person-dash me-2"></i> Agente Libre</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box highlight">
+                <span class="stat-value val-white">@Model.Winrate%</span>
+                <span class="stat-label">Winrate (@Model.PartidosGanados / @Model.PartidosJugados)</span>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-value val-green">@Model.GolesTotales</span>
+                <span class="stat-label">Goles</span>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-value val-blue">@Model.AsistenciasTotales</span>
+                <span class="stat-label">Asistencias</span>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-value val-red">@Model.SalvadasTotales</span>
+                <span class="stat-label">Salvadas</span>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-value val-gold"><i class="bi bi-trophy-fill" style="font-size:1rem"></i> @Model.MVPsTotales</span>
+                <span class="stat-label">MVPs Totales</span>
+            </div>
+        </div>
+
+        <div class="card-footer-actions">
+            <a asp-controller="Rankings" asp-action="Jugadores" class="btn-action btn-back">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-action btn-edit">
+                <i class="bi bi-pencil-square"></i> Editar Perfil
+            </a>
+        </div>
+
+    </div>
+</div>

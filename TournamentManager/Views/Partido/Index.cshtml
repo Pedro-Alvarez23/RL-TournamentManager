@@ -1,0 +1,190 @@
+﻿@using TournamentManager.Helpers
+@using TournamentManager.Models
+@model PaginatedList<Partido>
+
+@{
+    ViewData["Title"] = "All Matches";
+}
+
+<style>
+    :root {
+        --rl-blue: #00a8ff;
+        --rl-purple: #6c5ce7;
+        --rl-dark: #0f0f13;
+        --rl-panel: rgba(255, 255, 255, 0.05);
+    }
+
+    body {
+        background-color: #050505;
+    }
+
+    .neon-container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .neon-title {
+        font-style: italic;
+        font-weight: 900;
+        text-transform: uppercase;
+        background: -webkit-linear-gradient(45deg, #fff, var(--rl-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px rgba(0, 168, 255, 0.4);
+        margin-bottom: 30px;
+    }
+
+    .glass-table-container {
+        background: var(--rl-panel);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+
+    .table-neon {
+        color: white;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+        .table-neon thead th {
+            color: var(--rl-blue);
+            text-transform: uppercase;
+            padding: 15px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .table-neon tbody tr {
+            background: rgba(0, 0, 0, 0.35);
+            transition: .2s;
+        }
+
+            .table-neon tbody tr:hover {
+                background: rgba(255,255,255,.08);
+                transform: scale(1.01);
+                box-shadow: 0 0 15px rgba(108,92,231,.3);
+            }
+
+        .table-neon td {
+            padding: 15px;
+            border: none;
+            vertical-align: middle;
+        }
+
+            .table-neon td:first-child {
+                border-left: 4px solid var(--rl-purple);
+            }
+
+    .status-win {
+        color: #2ed573;
+        font-weight: bold;
+        text-shadow: 0 0 5px rgba(46,213,115,.6);
+    }
+
+    .status-pending {
+        color: #ced6e0;
+        opacity: .7;
+    }
+
+    .action-btn {
+        color: rgba(255,255,255,.6);
+        font-size: 1.2rem;
+        margin: 0 5px;
+        transition: .2s;
+    }
+
+        .action-btn:hover {
+            color: var(--rl-blue);
+            transform: scale(1.2);
+        }
+
+    .btn-neon {
+        border: 1px solid var(--rl-blue);
+        color: var(--rl-blue);
+        background: transparent;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+        .btn-neon:hover:not(.disabled) {
+            background: var(--rl-blue);
+            color: black;
+            box-shadow: 0 0 15px var(--rl-blue);
+        }
+
+        .btn-neon.disabled {
+            border-color: rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.2);
+        }
+</style>
+
+<div class="container mt-5 neon-container">
+
+    <div class="mb-4">
+        <h1 class="neon-title display-4">ALL MATCHES</h1>
+        <p class="text-white opacity-50">Listado completo de enfrentamientos</p>
+    </div>
+
+    <div class="glass-table-container">
+        <table class="table-neon">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Torneo</th>
+                    <th>Ronda</th>
+                    <th>Enfrentamiento</th>
+                    <th>Ganador</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    string equipoA = "Por definir";
+                    string equipoB = "Por definir";
+
+                    // Mostramos siempre el enfrentamiento si hay equipos
+                    var equipos = p.Equipos.Select(e => e.Equipo).ToList();
+                    if (equipos.Count > 0) equipoA = equipos[0]?.Nombre ?? "Por definir";
+                    if (equipos.Count > 1) equipoB = equipos[1]?.Nombre ?? "Por definir";
+
+                    // Ganador solo si se jugó
+                    string ganador = p.Ganador != null ? p.Ganador.Nombre : "Por definir";
+
+                    <tr>
+                        <td>#@p.Id</td>
+                        <td>@p.Ronda?.Torneo?.Nombre</td>
+                        <td>@p.Ronda?.Nombre</td>
+                        <td><strong>@equipoA</strong> vs <strong>@equipoB</strong></td>
+                        <td class="@(p.Ganador != null ? "status-win" : "status-pending")">@ganador</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@p.Id" class="action-btn"><i class="bi bi-eye-fill"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- PAGINADOR tipo PaginatedList -->
+        <div class="d-flex justify-content-center align-items-center mt-4 gap-3">
+            <a asp-action="Index"
+               asp-route-pageNumber="@(Model.PageIndex - 1)"
+               class="btn btn-neon px-4 @(Model.HasPreviousPage ? "" : "disabled")">
+                <i class="bi bi-caret-left-fill"></i> PREV
+            </a>
+
+            <span class="text-info fw-bold font-monospace">
+                PAGE @Model.PageIndex / @Model.TotalPages
+            </span>
+
+            <a asp-action="Index"
+               asp-route-pageNumber="@(Model.PageIndex + 1)"
+               class="btn btn-neon px-4 @(Model.HasNextPage ? "" : "disabled")">
+                NEXT <i class="bi bi-caret-right-fill"></i>
+            </a>
+        </div>
+    </div>
+</div>

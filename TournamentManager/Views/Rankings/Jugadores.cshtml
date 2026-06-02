@@ -1,0 +1,336 @@
+﻿@using TournamentManager.Helpers
+@using TournamentManager.Models
+
+@model PaginatedList<Jugador>
+
+@{
+    ViewData["Title"] = "Ranking de Jugadores";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    var currentSort = ViewData["CurrentSort"] as string;
+}
+
+<style>
+    /* Estilos (Sin cambios) */
+    .rl-card {
+        background: rgba(20, 10, 40, 0.7);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .table-rl {
+        color: white;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+
+        .table-rl thead th {
+            border: none;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: var(--rl-blue);
+            background: transparent;
+            padding-bottom: 15px;
+            vertical-align: middle;
+        }
+
+        .table-rl tbody tr {
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease-in-out;
+        }
+
+            .table-rl tbody tr:hover {
+                transform: scale(1.01);
+                background: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 15px var(--rl-purple);
+                z-index: 10;
+                position: relative;
+            }
+
+        .table-rl td {
+            border: none;
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+            .table-rl td:first-child {
+                border-radius: 8px 0 0 8px;
+            }
+
+            .table-rl td:last-child {
+                border-radius: 0 8px 8px 0;
+            }
+
+    .sort-link {
+        color: rgba(255,255,255,0.6);
+        text-decoration: none;
+        transition: 0.3s;
+        display: block;
+    }
+
+        .sort-link:hover, .sort-link.active {
+            color: var(--rl-orange);
+            text-shadow: 0 0 8px var(--rl-orange);
+        }
+
+    .player-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, var(--rl-purple), var(--rl-blue));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        text-shadow: 1px 1px 2px black;
+        border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-neon {
+        border: 1px solid var(--rl-blue);
+        color: var(--rl-blue);
+        background: transparent;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+        .btn-neon:hover:not(.disabled) {
+            background: var(--rl-blue);
+            color: black;
+            box-shadow: 0 0 15px var(--rl-blue);
+        }
+
+        .btn-neon.disabled {
+            border-color: rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.2);
+        }
+
+    /* <<< NUEVO: ESTILO PARA EL LOGO MINI DENTRO DEL BADGE >>> */
+    .team-logo-small {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+        margin-right: 8px;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <div class="row align-items-center mb-5">
+        <div class="col-md-8">
+            <h2 class="display-5 fw-bold fst-italic m-0" style="text-shadow: 2px 2px 0px var(--rl-purple);">
+                <i class="bi bi-person-bounding-box text-warning"></i> PLAYERS RANKING
+            </h2>
+        </div>
+
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-info">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="searchInput"
+                       class="form-control bg-transparent text-white border-secondary"
+                       placeholder="Buscar jugador..."
+                       value="@ViewData["CurrentFilter"]"
+                       autocomplete="off"
+                       style="box-shadow: none;">
+            </div>
+        </div>
+    </div>
+    <div class="rl-card p-4" id="tableContainer">
+        <div class="table-responsive">
+            <table class="table table-rl mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>PLAYER</th>
+                        <th>TEAM</th>
+
+                        <th class="text-center">
+                            <a asp-action="Jugadores" asp-route-sortOrder="@ViewData["WinsSort"]"
+                               class="sort-link @(currentSort?.Contains("wins") == true ? "active" : "")">
+                                MATCHES (W/P) <i class="bi bi-arrow-down-up small"></i>
+                            </a>
+                        </th>
+
+                        <th class="text-center">WINRATE</th>
+
+                        <th class="text-center">
+                            <a asp-action="Jugadores" asp-route-sortOrder="@ViewData["GolesSort"]"
+                               class="sort-link @(string.IsNullOrEmpty(currentSort) || currentSort.Contains("goles") ? "active" : "")">
+                                GOALS <i class="bi bi-arrow-down-up small"></i>
+                            </a>
+                        </th>
+
+                        <th class="text-center">G/GAME</th>
+
+                        <th class="text-center">
+                            <a asp-action="Jugadores" asp-route-sortOrder="@ViewData["MvpSort"]"
+                               class="sort-link @(currentSort?.Contains("mvp") == true ? "active" : "")">
+                                MVP <i class="bi bi-star-fill text-warning"></i>
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int pos = (Model.PageIndex - 1) * 9 + 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center text-muted fw-bold">@(pos++)</td>
+
+                            <td>
+                                <a asp-controller="Jugador" asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none d-block">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="player-avatar">
+                                            @item.Nick!.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-bold fs-5 text-white">@item.Nick</span>
+                                            <span class="small text-muted text-uppercase" style="font-size: 0.75rem;">@item.Nombre</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </td>
+
+                            <td>
+                                @if (item.Equipo != null)
+                                {
+                                    <span class="badge bg-secondary bg-opacity-25 border border-secondary text-light d-inline-flex align-items-center px-3 py-2">
+
+                                        @if (!string.IsNullOrEmpty(item.Equipo.Logo))
+                                        {
+                                            <img src="@item.Equipo.Logo" class="team-logo-small" alt="logo" />
+                                        }
+
+                                        @item.Equipo.Nombre
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic">Free Agent</span>
+                                }
+                            </td>
+
+                            <td class="text-center">
+                                <span class="text-success fw-bold">@item.PartidosGanados</span>
+                                <span class="text-muted">/</span>
+                                <span class="text-white">@item.PartidosJugados</span>
+                            </td>
+
+                            <td class="text-center">
+                                @if (item.Winrate >= 50)
+                                {
+                                    <span class="text-success fw-bold" style="text-shadow: 0 0 5px green;">@item.Winrate%</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger opacity-75">@item.Winrate%</span>
+                                }
+                            </td>
+
+                            <td class="text-center fw-bold fs-4 text-white" style="text-shadow: 0 0 10px var(--rl-blue);">
+                                @item.GolesTotales
+                            </td>
+
+                            <td class="text-center text-info opacity-75 small">
+                                @item.GolesPorPartido
+                            </td>
+
+                            <td class="text-center">
+                                @if (item.MVPsTotales > 0)
+                                {
+                                    <span class="badge bg-warning text-dark border border-warning shadow-sm">
+                                        @item.MVPsTotales <i class="bi bi-star-fill"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center mt-4 gap-3">
+        <a asp-action="Jugadores"
+           asp-route-pageNumber="@(Model.PageIndex - 1)"
+           asp-route-sortOrder="@ViewData["CurrentSort"]"
+           asp-route-searchString="@ViewData["CurrentFilter"]"
+           class="btn btn-neon px-4 @prevDisabled">
+            <i class="bi bi-caret-left-fill"></i> PREV
+        </a>
+
+        <span class="text-info fw-bold font-monospace">
+            PAGE @Model.PageIndex / @Model.TotalPages
+        </span>
+
+        <a asp-action="Jugadores"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           asp-route-sortOrder="@ViewData["CurrentSort"]"
+           asp-route-searchString="@ViewData["CurrentFilter"]"
+           class="btn btn-neon px-4 @nextDisabled">
+            NEXT <i class="bi bi-caret-right-fill"></i>
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            let timeout = null;
+
+            // IMPORTANTE: Uso el script con DOMParser que funciona mejor
+            $('#searchInput').on('input', function () {
+                var query = $(this).val();
+
+                clearTimeout(timeout);
+
+                timeout = setTimeout(function () {
+                    $.ajax({
+                        url: '@Url.Action("Jugadores", "Rankings")',
+                        type: 'GET',
+                        data: {
+                            searchString: query,
+                            sortOrder: '@ViewData["CurrentSort"]'
+                        },
+                        success: function (result) {
+                            // Método robusto usando DOMParser para leer la respuesta
+                            var parser = new DOMParser();
+                            var doc = parser.parseFromString(result, "text/html");
+
+                            // Buscar el contenedor de la tabla en el HTML recibido
+                            var newTableContent = doc.getElementById("tableContainer");
+
+                            if (newTableContent) {
+                                $('#tableContainer').html(newTableContent.innerHTML);
+                            }
+                        },
+                        error: function () {
+                            console.log('Error en la búsqueda');
+                        }
+                    });
+                }, 400); // 400ms de retraso
+            });
+
+            // Efecto visual al enfocar el buscador
+            $('#searchInput').focus(function() {
+                $(this).css('box-shadow', '0 0 15px var(--rl-blue)');
+                $(this).css('border-color', 'var(--rl-blue)');
+            }).blur(function() {
+                $(this).css('box-shadow', 'none');
+                $(this).css('border-color', 'rgba(255,255,255,0.2)');
+            });
+        });
+    </script>
+}

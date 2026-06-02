@@ -1,0 +1,98 @@
+﻿@model TournamentManager.Models.Partido
+
+@{
+    if (Model == null) return;
+
+    var listaEquipos = Model.Equipos.ToList();
+    var eq1 = listaEquipos.Count > 0 ? listaEquipos[0] : null;
+    var eq2 = listaEquipos.Count > 1 ? listaEquipos[1] : null;
+
+    bool hayEq1 = eq1 != null && eq1.Equipo != null;
+    bool hayEq2 = eq2 != null && eq2.Equipo != null;
+    bool listoParaJugar = hayEq1 && hayEq2;
+    bool jugado = Model.Jugado;
+
+    int g1 = hayEq1 ? eq1!.Goles : 0;
+    int g2 = hayEq2 ? eq2!.Goles : 0;
+
+    string claseCard = "match-card";
+    if (ViewData["IsFinal"] != null && (bool)ViewData["IsFinal"]) { claseCard += " final-match"; }
+
+    bool gana1 = jugado && g1 > g2;
+    bool gana2 = jugado && g2 > g1;
+}
+
+<div class="@claseCard">
+    <div class="team-row @(gana1 ? "winner" : (jugado && !gana1 ? "loser" : ""))">
+        <div style="display:flex; align-items:center; overflow: hidden; white-space: nowrap;">
+            @if (hayEq1)
+            {
+                @if (!string.IsNullOrEmpty(eq1.Equipo.Logo))
+                {
+                    <img src="@eq1.Equipo.Logo" class="team-logo-mini" alt="logo" />
+                }
+                else
+                {
+                    <i class="bi bi-shield-shaded me-2"></i>
+                }
+
+                <span class="team-name">@eq1.Equipo!.Nombre</span>
+
+                @if (gana1 && (ViewData["IsFinal"] as bool? == true))
+                {
+                    <i class="bi bi-trophy-fill ms-1 text-warning" style="font-size:0.8rem"></i>
+                }
+            }
+            else
+            {
+                <span class="team-tbd">TBD</span>
+            }
+        </div>
+        <span class="score">@(jugado? g1.ToString() : "-")</span>
+    </div>
+
+    <div class="match-divider"></div>
+
+    <div class="team-row @(gana2 ? "winner" : (jugado && !gana2 ? "loser" : ""))">
+        <div style="display:flex; align-items:center; overflow: hidden; white-space: nowrap;">
+            @if (hayEq2)
+            {
+                @if (!string.IsNullOrEmpty(eq2.Equipo.Logo))
+                {
+                    <img src="@eq2.Equipo.Logo" class="team-logo-mini" alt="logo" />
+                }
+                else
+                {
+                    <i class="bi bi-shield-shaded me-2"></i>
+                }
+
+                <span class="team-name">@eq2.Equipo!.Nombre</span>
+
+                @if (gana2 && (ViewData["IsFinal"] as bool? == true))
+                {
+                    <i class="bi bi-trophy-fill ms-1 text-warning" style="font-size:0.8rem"></i>
+                }
+            }
+            else
+            {
+                <span class="team-tbd">TBD</span>
+            }
+        </div>
+        <span class="score">@(jugado? g2.ToString() : "-")</span>
+    </div>
+
+    @if (listoParaJugar)
+    {
+        <a asp-controller="Matches" asp-action="Play" asp-route-id="@Model.Id"
+           class="btn-action @(jugado ? "btn-edit" : "btn-play")"
+           title="@(jugado ? "Editar Resultado" : "Jugar Partido")">
+            <i class="bi @(jugado ? "bi-pencil-fill" : "bi-controller")"></i>
+        </a>
+    }
+    else
+    {
+        <div class="locked-icon" title="Esperando rivales...">
+            <i class="bi bi-lock-fill"></i>
+        </div>
+    }
+</div>

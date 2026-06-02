@@ -1,0 +1,298 @@
+﻿@using TournamentManager.Models
+@model IEnumerable<TournamentManager.Models.Torneo>
+
+@{
+    ViewData["Title"] = "Torneos";
+
+    // --- LÓGICA DE PAGINACIÓN ---
+    int registrosPorPagina = 7;
+    int paginaActual = 1;
+
+    if (Context.Request.Query.ContainsKey("pag"))
+    {
+        int.TryParse(Context.Request.Query["pag"], out paginaActual);
+    }
+
+    int totalRegistros = Model.Count();
+    int totalPaginas = (int)Math.Ceiling((double)totalRegistros / registrosPorPagina);
+    var torneosPaginados = Model.Skip((paginaActual - 1) * registrosPorPagina).Take(registrosPorPagina);
+}
+
+<style>
+    /* --- ESTILOS NEON / CYBERPUNK (Mismos estilos previos) --- */
+    :root {
+        --rl-blue: #00a8ff;
+        --rl-purple: #6c5ce7;
+        --rl-dark: #0f0f13;
+        --rl-panel: rgba(255, 255, 255, 0.05);
+    }
+
+    body {
+        background-color: #050505;
+    }
+
+    .neon-container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .neon-title {
+        font-style: italic;
+        font-weight: 900;
+        text-transform: uppercase;
+        background: -webkit-linear-gradient(45deg, #fff, var(--rl-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px rgba(0, 168, 255, 0.4);
+        margin-bottom: 30px;
+    }
+
+    .btn-create {
+        background: linear-gradient(90deg, var(--rl-blue), var(--rl-purple));
+        border: none;
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 10px 25px;
+        clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+
+        .btn-create:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--rl-blue);
+            color: white;
+        }
+
+    .glass-table-container {
+        background: var(--rl-panel);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+
+    .table-neon {
+        color: white;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+        .table-neon thead th {
+            border: none;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: var(--rl-blue);
+            padding: 15px;
+            font-weight: 800;
+        }
+
+        .table-neon tbody tr {
+            background: rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+            .table-neon tbody tr:hover {
+                transform: scale(1.01);
+                background: rgba(255, 255, 255, 0.08);
+                box-shadow: 0 0 15px rgba(108, 92, 231, 0.2);
+            }
+
+        .table-neon td {
+            border: none;
+            padding: 15px;
+            vertical-align: middle;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+            .table-neon td:first-child {
+                border-left: 4px solid var(--rl-purple);
+                border-radius: 5px 0 0 5px;
+            }
+
+            .table-neon td:last-child {
+                border-radius: 0 5px 5px 0;
+                text-align: right;
+            }
+
+    .action-btn {
+        color: rgba(255,255,255,0.6);
+        margin: 0 5px;
+        transition: 0.2s;
+        font-size: 1.2rem;
+    }
+
+        .action-btn:hover {
+            color: var(--rl-blue);
+            transform: scale(1.2);
+        }
+
+        .action-btn.delete:hover {
+            color: #ff4757;
+        }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .page-link-neon {
+        background: transparent;
+        border: 1px solid var(--rl-purple);
+        color: white;
+        padding: 8px 16px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.3s;
+        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    }
+
+        .page-link-neon:hover, .page-link-neon.active {
+            background: var(--rl-purple);
+            box-shadow: 0 0 10px var(--rl-purple);
+        }
+
+    /* ESTILOS DE ESTADO (REDISEÑADOS) */
+    .status-badge {
+        padding: 5px 12px; /* Un poco más de aire */
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 800; /* Extra bold para que se lea bien sobre el brillo */
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        backdrop-filter: blur(4px); /* Efecto cristal */
+    }
+
+    /* En Curso -> Naranja Neón (Energía/Actividad) */
+    .status-active {
+        background: rgba(255, 159, 67, 0.15);
+        color: #ff9f43;
+        border: 1px solid rgba(255, 159, 67, 0.5);
+        box-shadow: 0 0 10px rgba(255, 159, 67, 0.3); /* Resplandor naranja */
+    }
+
+    /* Finalizado -> Verde Neón (Éxito/Completado) */
+    .status-closed {
+        background: rgba(46, 213, 115, 0.15);
+        color: #2ed573;
+        border: 1px solid rgba(46, 213, 115, 0.5);
+        box-shadow: 0 0 10px rgba(46, 213, 115, 0.3); /* Resplandor verde */
+    }
+
+    /* Pendiente -> Gris Metalizado (Espera/Standby) */
+    .status-pending {
+        background: rgba(223, 228, 234, 0.1);
+        color: #ced6e0;
+        border: 1px solid rgba(116, 125, 140, 0.5);
+        /* Sin brillo intenso, para que quede en segundo plano */
+    }
+
+</style>
+
+<div class="container mt-5 neon-container">
+
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="neon-title display-4 m-0">LISTA DE TORNEOS</h1>
+            <p class="text-white opacity-50">Gestiona y consulta el historial de competiciones.</p>
+        </div>
+        <a asp-controller="TorneoWizard" asp-action="Crear" class="btn-create">
+            <i class="bi bi-trophy-fill"></i> NUEVO TORNEO
+        </a>
+    </div>
+
+    <div class="glass-table-container">
+        <table class="table-neon">
+            <thead>
+                <tr>
+                    <th>TORNEO</th>
+                    <th>INICIO</th>
+                    <th>FIN</th>
+                    <th>ESTADO</th>
+                    <th>CAMPEÓN</th>
+                    <th>MVP</th>
+                    <th>ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in torneosPaginados)
+                {
+                    <tr>
+                        <td class="fw-bold fs-5">
+                            @Html.DisplayFor(modelItem => item.Nombre)
+                        </td>
+                        <td class="text-muted">
+                            @item.FechaInicio.ToShortDateString()
+                        </td>
+                        <td class="text-muted">
+                            @* CORRECCIÓN 1: Null check para FechaFin *@
+                            @(item.FechaFin.HasValue? item.FechaFin.Value.ToShortDateString() : "-")
+                        </td>
+                        <td>
+                            @* CORRECCIÓN 2: Comparación con Enum y Switch para los 3 estados *@
+                            @switch (item.Estado)
+                            {
+                                case EstadoTorneo.Finalizado:
+                                    <span class="status-badge status-closed">Finalizado</span>
+                                    break;
+                                case EstadoTorneo.EnCurso:
+                                    <span class="status-badge status-active">En Curso</span>
+                                    break;
+                                case EstadoTorneo.Pendiente:
+                                default:
+                                    <span class="status-badge status-pending">Pendiente</span>
+                                    break;
+                            }
+                        </td>
+                        <td style="color: gold; font-weight: bold; text-shadow: 0 0 5px rgba(255,215,0,0.5);">
+                            @if (item.Campeon != null)
+                            {
+                                <span><i class="bi bi-trophy"></i> @item.Campeon.Nombre</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">-</span>
+                            }
+                        </td>
+                        <td class="text-info">
+                            @if (item.MVP != null)
+                            {
+                                <span><i class="bi bi-star-fill"></i> @item.MVP.Nick</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">-</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="action-btn" title="Detalles"><i class="bi bi-eye-fill"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="action-btn delete" title="Borrar"><i class="bi bi-trash-fill"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (totalPaginas > 1)
+        {
+            <div class="pagination-container">
+                @for (int i = 1; i <= totalPaginas; i++)
+                {
+                    <a href="@Url.Action("Index", new { pag = i })"
+                       class="page-link-neon @(i == paginaActual ? "active" : "")">
+                        @i
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</div>

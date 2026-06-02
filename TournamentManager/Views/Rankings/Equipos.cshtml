@@ -1,0 +1,227 @@
+﻿@using TournamentManager.Helpers
+@using TournamentManager.ViewModels
+
+@model PaginatedList<EquipoRankingVM>
+
+@{
+    ViewData["Title"] = "Ranking de Equipos";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<style>
+    /* Estilos específicos de esta vista */
+    .rl-card {
+        background: rgba(20, 10, 40, 0.7);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .table-rl {
+        color: white;
+        border-collapse: separate;
+        border-spacing: 0 8px; /* Espacio entre filas */
+    }
+
+        .table-rl thead th {
+            border: none;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            color: var(--rl-blue);
+            background: transparent;
+            padding-bottom: 15px;
+        }
+
+        .table-rl tbody tr {
+            background: rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .table-rl tbody tr:hover {
+                transform: scale(1.01);
+                background: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 15px var(--rl-purple);
+                cursor: default;
+            }
+
+        .table-rl td {
+            border: none;
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+            /* Bordes redondeados para las filas */
+            .table-rl td:first-child {
+                border-radius: 8px 0 0 8px;
+            }
+
+            .table-rl td:last-child {
+                border-radius: 0 8px 8px 0;
+            }
+
+    /* Ranking Badges */
+    .rank-badge {
+        font-weight: 800;
+        font-size: 1.2rem;
+        display: inline-block;
+        width: 35px;
+        text-align: center;
+    }
+
+    .rank-1 {
+        color: #ffd700;
+        text-shadow: 0 0 10px #ffd700;
+    }
+    /* Oro */
+    .rank-2 {
+        color: #c0c0c0;
+        text-shadow: 0 0 10px #c0c0c0;
+    }
+    /* Plata */
+    .rank-3 {
+        color: #cd7f32;
+        text-shadow: 0 0 10px #cd7f32;
+    }
+    /* Bronce */
+
+    /* Paginación Neon */
+    .btn-neon {
+        border: 1px solid var(--rl-blue);
+        color: var(--rl-blue);
+        background: transparent;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+        .btn-neon:hover:not(.disabled) {
+            background: var(--rl-blue);
+            color: black;
+            box-shadow: 0 0 15px var(--rl-blue);
+        }
+
+        .btn-neon.disabled {
+            border-color: rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.2);
+        }
+
+    /* <<< NUEVO: ESTILO PARA EL LOGO EN RANKING >>> */
+    .ranking-logo {
+        height: 25px;
+        width: 25px;
+        object-fit: contain;
+        margin-right: 12px;
+        /* Sutil sombra para que destaque sobre el fondo oscuro */
+        filter: drop-shadow(0 0 2px rgba(255,255,255,0.2));
+    }
+</style>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="display-5 fw-bold fst-italic" style="text-shadow: 2px 2px 0px var(--rl-purple);">
+            <i class="bi bi-trophy-fill text-warning"></i> LEADERBOARD
+        </h2>
+        <div class="text-end">
+            <span class="badge bg-transparent border border-info text-info">SEASON 5</span>
+        </div>
+    </div>
+
+    <div class="rl-card p-4">
+        <div class="table-responsive">
+            <table class="table table-rl mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>TEAM</th>
+                        <th class="text-center">PJ</th>
+                        <th class="text-center text-success">WINS</th>
+                        <th class="text-center text-danger">LOSS</th>
+                        <th class="text-center">WINRATE</th>
+                        <th class="text-center">GOALS</th>
+                        <th class="text-center">G/GAME</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int ranking = (Model.PageIndex - 1) * 8 + 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        // Lógica para colores del Top 3
+                        string rankClass = "text-muted";
+                        string icon = "";
+
+                        if (ranking == 1) { rankClass = "rank-1"; icon = "👑"; }
+                        else if (ranking == 2) { rankClass = "rank-2"; }
+                        else if (ranking == 3) { rankClass = "rank-3"; }
+
+                        // URL del Details del equipo
+                        var detailsUrl = Url.Action("Details", "Equipo", new { id = item.Equipo.Id });
+
+                        <tr style="cursor:pointer;" onclick="window.location='@detailsUrl';">
+                            <td class="text-center">
+                                <span class="rank-badge @rankClass">@ranking</span> @icon
+                            </td>
+                            @{
+                                ranking++;
+                            }
+
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3" style="width: 4px; height: 25px; background: var(--rl-blue); box-shadow: 0 0 8px var(--rl-blue); border-radius: 2px;"></div>
+
+                                    @if (!string.IsNullOrEmpty(item.Equipo.Logo))
+                                    {
+                                        <img src="@item.Equipo.Logo" class="ranking-logo" alt="logo" />
+                                    }
+
+                                    <span class="fs-5 fw-bold text-uppercase">@item.Equipo.Nombre</span>
+                                </div>
+                            </td>
+
+                            <td class="text-center fw-bold">@item.Jugados</td>
+                            <td class="text-center text-success fw-bold" style="text-shadow: 0 0 5px green;">@item.Victorias</td>
+                            <td class="text-center text-danger opacity-75">@item.Derrotas</td>
+
+                            <td class="text-center">
+                                @if (item.Winrate >= 50)
+                                {
+                                    <span class="badge bg-success bg-opacity-25 text-success border border-success">@item.Winrate%</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger bg-opacity-25 text-danger border border-danger">@item.Winrate%</span>
+                                }
+                            </td>
+
+                            <td class="text-center fw-bold fs-5">@item.GolesFavor</td>
+                            <td class="text-center text-info">@item.GolesPorPartido</td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center mt-4 gap-3">
+        <a asp-action="Equipos"
+           asp-route-pageNumber="@(Model.PageIndex - 1)"
+           class="btn btn-neon px-4 @prevDisabled">
+            <i class="bi bi-caret-left-fill"></i> PREV
+        </a>
+
+        <span class="text-info fw-bold font-monospace">
+            PAGE @Model.PageIndex / @Model.TotalPages
+        </span>
+
+        <a asp-action="Equipos"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           class="btn btn-neon px-4 @nextDisabled">
+            NEXT <i class="bi bi-caret-right-fill"></i>
+        </a>
+    </div>
+</div>

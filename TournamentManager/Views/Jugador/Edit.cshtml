@@ -1,0 +1,198 @@
+﻿@model TournamentManager.Models.Jugador
+
+@{
+    ViewData["Title"] = "Editar Jugador";
+}
+
+<style>
+    :root {
+        --pl-bg: #0f0f13;
+        --pl-card-bg: #1e1e24;
+        --pl-primary: #a29bfe;
+        --pl-accent: #6c5ce7;
+        --pl-text-muted: #b2bec3;
+    }
+
+    body {
+        background-color: var(--pl-bg);
+        color: white;
+    }
+
+    .edit-container {
+        display: flex;
+        justify-content: center;
+        padding-top: 50px;
+    }
+
+    .edit-card {
+        background: var(--pl-card-bg);
+        padding: 40px;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .edit-header {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 20px;
+    }
+
+        .edit-header h2 {
+            color: var(--pl-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+    /* Estilos para los Inputs */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .control-label {
+        font-size: 0.85rem;
+        color: var(--pl-text-muted);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control-dark {
+        background-color: rgba(0,0,0,0.3) !important;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: white !important;
+        border-radius: 10px;
+        padding: 10px 15px;
+        transition: 0.3s;
+    }
+
+        .form-control-dark:focus {
+            background-color: rgba(0,0,0,0.5) !important;
+            border-color: var(--pl-primary);
+            box-shadow: 0 0 10px rgba(162, 155, 254, 0.2);
+        }
+
+    /* Select específico */
+    select.form-control-dark {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1em;
+    }
+
+    /* Botones */
+    .btn-save {
+        width: 100%;
+        background: linear-gradient(45deg, var(--pl-accent), var(--pl-primary));
+        border: none;
+        padding: 12px;
+        border-radius: 30px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 10px;
+        transition: 0.3s;
+    }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+            color: white;
+        }
+
+    .btn-cancel {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: var(--pl-text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+
+        .btn-cancel:hover {
+            color: white;
+        }
+
+    .text-danger {
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: block;
+    }
+</style>
+
+<div class="edit-container">
+    <div class="edit-card">
+
+        <div class="edit-header">
+            <h2><i class="bi bi-pencil-square"></i> Editar Perfil</h2>
+        </div>
+
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="Id" />
+
+            <input type="hidden" asp-for="PartidosJugados" />
+            <input type="hidden" asp-for="PartidosGanados" />
+            <input type="hidden" asp-for="GolesTotales" />
+            <input type="hidden" asp-for="AsistenciasTotales" />
+            <input type="hidden" asp-for="SalvadasTotales" />
+            <input type="hidden" asp-for="MVPsTotales" />
+
+            <div class="form-group">
+                <label asp-for="Nick" class="control-label">Alias (Nick)</label>
+                <input asp-for="Nick" class="form-control form-control-dark" placeholder="Ej. Faker" />
+                <span asp-validation-for="Nick" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Nombre" class="control-label">Nombre Real</label>
+                <input asp-for="Nombre" class="form-control form-control-dark" placeholder="Nombre completo" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Edad" class="control-label">Edad</label>
+                        <input asp-for="Edad" class="form-control form-control-dark" />
+                        <span asp-validation-for="Edad" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Pais" class="control-label">País</label>
+                        <input asp-for="Pais" class="form-control form-control-dark" />
+                        <span asp-validation-for="Pais" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EquipoId" class="control-label">Equipo Actual</label>
+                <select asp-for="EquipoId" class="form-control form-control-dark" asp-items="ViewBag.EquipoId">
+                    <option value="">-- Agente Libre --</option>
+                </select>
+                <span asp-validation-for="EquipoId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group pt-3">
+                <input type="submit" value="Guardar Cambios" class="btn btn-save text-white" />
+            </div>
+
+            <a asp-controller="Rankings" asp-action="Jugadores" class="btn-cancel">Cancelar y volver</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
