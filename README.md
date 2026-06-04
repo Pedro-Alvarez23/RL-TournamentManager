@@ -20,19 +20,19 @@ RL-TournamentManager es una aplicación web diseñada para la gestión completa 
 
 ## Capturas
 ## Inicio de la aplicación
-![Inicio de la aplicación](screenshots/inicial.png)
+![Inicio de la aplicación](screenshots/inicial.jpg)
 
 ## Ejemplo de un torneo
-![Ejemplo de un torneo](screenshots/llaves.png)
+![Ejemplo de un torneo](screenshots/llaves.jpg)
 
 ## Creación de torneo
-![Creación de torneo](screenshots/crear.png)
+![Creación de torneo](screenshots/crear.jpg)
 
 ## Lista de jugadores
-![Lista de jugadores](screenshots/jugadores.png)
+![Lista de jugadores](screenshots/jugadores.jpg)
 
 ## Ejemplo de partido
-![Ejemplo de partido](screenshots/partido.png)
+![Ejemplo de partido](screenshots/partido.jpg)
 ## Instalación
 
 1- Clona el repositorio:
