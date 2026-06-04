@@ -19,30 +19,42 @@ RL-TournamentManager es una aplicación web diseñada para la gestión completa 
 - **Control de Acceso:** Sistema de registro e inicio de sesión de usuarios.
 
 ## Capturas
-[imagen o gif]
+## Inicio de la aplicación
+![Inicio de la aplicación](screenshots/inicial.png)
 
+## Ejemplo de un torneo
+![Ejemplo de un torneo](screenshots/llaves.png)
+
+## Creación de torneo
+![Creación de torneo](screenshots/crear.png)
+
+## Lista de jugadores
+![Lista de jugadores](screenshots/jugadores.png)
+
+## Ejemplo de partido
+![Ejemplo de partido](screenshots/partido.png)
 ## Instalación
 
-1. Clona el repositorio en tu máquina local.
-2. Asegúrate de tener instalado el [SDK de .NET 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) y tener acceso a una instancia de SQL Server.
-3. Abre una consola en el directorio raíz del proyecto.
-4. Restaura las dependencias de NuGet ejecutando:
-   ```bash
-   dotnet restore
-   ```
-5. Aplica las migraciones para inicializar la base de datos:
-   ```bash
-   dotnet ef database update --project TournamentManager
-   ```
+1- Clona el repositorio:
+git clone <url-del-repositorio>
+cd RL-TournamentManager
 
-## Uso
+2-Restaura las dependencias:
+dotnet restore
 
-1. Ejecuta el proyecto desde la línea de comandos:
-   ```bash
-   dotnet run --project TournamentManager
-   ```
-2. Abre tu navegador y accede a la URL que indica la consola (habitualmente `https://localhost:7XXX` o `http://localhost:5XXX`).
-3. Navega por las diferentes secciones del menú superior para crear jugadores, formar equipos y usar el "Tournament Wizard" para inicializar tu primer torneo.
+3-Verifica la cadena de conexión en TournamentManager/appsettings.json.
+
+Por defecto el proyecto utiliza LocalDB:
+
+"DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=TournamentManagerDB;Trusted_Connection=True;MultipleActiveResultSets=true"
+
+4-Crea la base de datos y aplica las migraciones:
+dotnet ef database update --project TournamentManager
+
+5-Ejecuta la aplicación:
+dotnet run --project TournamentManager
+
+6-Abre el navegador en la URL indicada por la consola (normalmente https://localhost:xxxx).
 
 ## Arquitectura
 
