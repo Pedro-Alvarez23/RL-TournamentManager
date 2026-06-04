@@ -16,7 +16,6 @@ RL-TournamentManager es una aplicación web diseñada para la gestión completa 
 - **Gestión de Equipos y Jugadores:** Administración de la plantilla de jugadores y la formación de los equipos.
 - **Encuentros y Rondas:** Organización estructurada de las competiciones en rondas y registro de los resultados de cada partido.
 - **Rankings:** Visualización de la clasificación y desempeño de los participantes.
-- **Control de Acceso:** Sistema de registro e inicio de sesión de usuarios.
 
 ## Capturas
 ## Inicio de la aplicación
